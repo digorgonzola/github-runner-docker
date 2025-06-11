@@ -8,14 +8,18 @@ CONTAINER_ID=$(cat /proc/self/cgroup | grep docker | head -1 | cut -d/ -f3 | cut
 
 cd ${HOME}/actions-runner
 
-./config.sh --url https://github.com/${ORGANISATION} \
-    --token $(get_token) \
-    --name ${CONTAINER_ID} \
-    --runnergroup ${RUNNER_GROUP} \
-    --labels ${LABELS} \
-    --no-default-labels \
-    --disableupdate \
-    --ephemeral
+config_options=()
+config_options+=("--url" "https://github.com/${ORGANISATION}")
+config_options+=("--token" "$(get_token)")
+config_options+=("--name" "${CONTAINER_ID}")
+config_options+=("--disableupdate")
+config_options+=("--runnergroup" "${RUNNER_GROUP}")
+[[ -n "$LABELS" ]] && config_options+=("--labels" "${LABELS}" "--no-default-labels")
+[[ "$EPHEMERAL" = true ]] && config_options+=("--ephemeral")
+
+./config.sh "${config_options[@]}"
+
+echo "ACTIONS_RUNNER_HOOK_JOB_COMPLETED=${HOME}/cleanup.sh" >> .env
 
 cleanup() {
     echo "Removing runner..."
@@ -26,7 +30,3 @@ trap 'cleanup; exit 130' INT
 trap 'cleanup; exit 143' TERM
 
 ./run.sh & wait $!
-
-# Always cleanup work directory
-echo "Removing work directory..."
-rm -rf ${HOME}/actions-runner/_work
