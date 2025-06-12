@@ -14,7 +14,7 @@ config_options+=("--token" "$(get_token)")
 config_options+=("--name" "${CONTAINER_ID}")
 config_options+=("--disableupdate")
 config_options+=("--runnergroup" "${RUNNER_GROUP}")
-[[ -n "$LABELS" ]] && config_options+=("--labels" "${LABELS}" "--no-default-labels")
+[[ -n "$LABELS" ]] && config_options+=("--labels" "${LABELS}")
 [[ "$EPHEMERAL" = true ]] && config_options+=("--ephemeral")
 
 ./config.sh "${config_options[@]}"
