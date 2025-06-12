@@ -3,3 +3,6 @@
 
 # ignore IDE files
 .idea
+
+# Ignore Python virtual environment
+.venv/
