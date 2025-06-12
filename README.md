@@ -32,7 +32,7 @@ A Dockerized self-hosted GitHub Actions runner for automating CI/CD workflows in
    RUNNER_GROUP=default
    LABELS=your,custom,labels
    ```
-   
+
 3. **Modify the `docker-compose.yml` file** if necessary, especially deployment settings like the number of replicas or resource limits.
 
    ```yaml

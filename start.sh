@@ -24,8 +24,8 @@ echo "ACTIONS_RUNNER_HOOK_JOB_COMPLETED=${HOME}/cleanup.sh" >> .env
 cleanup() {
     echo "Removing runner..."
     ./config.sh remove --token $(get_token)
-}    
-    
+}
+
 trap 'cleanup; exit 130' INT
 trap 'cleanup; exit 143' TERM
 
