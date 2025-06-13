@@ -1,22 +1,11 @@
 services:
   runner:
-    build: .
-    env_file: .env
-    environment:
-      - ACCESS_TOKEN=${ACCESS_TOKEN}
-      - LABELS=${LABELS}
-      - ORGANISATION=${ORGANISATION}
-      - RUNNER_GROUP=${RUNNER_GROUP:-default}
-    network_mode: host
-    healthcheck:
-      test: |
-        pgrep -f "run.sh" > /dev/null &&
-        pgrep -f "run-helper.sh" > /dev/null &&
-        pgrep -f "Runner.Listener" > /dev/null
-      interval: 5s
-      timeout: 5s
-      retries: 3
-      start_period: 60s
+    build:
+      context: .
+      args:
+        RUNNER_HOME: ${RUNNER_HOME:-/opt/actions-runner}
+    command:
+      - ./start.sh $ACCESS_TOKEN
     deploy:
       mode: replicated
       replicas: 2
@@ -30,3 +19,19 @@ services:
       restart_policy:
         condition: any
         delay: 1s
+    entrypoint: ["/bin/bash", "-c"]
+    environment:
+      LABELS: ${LABELS}
+      ORGANISATION: ${ORGANISATION}
+      RUNNER_GROUP: ${RUNNER_GROUP:-default}
+      RUNNER_HOME: ${RUNNER_HOME:-/opt/actions-runner}
+    healthcheck:
+      test: |
+        pgrep -f "run.sh" > /dev/null &&
+        pgrep -f "run-helper.sh" > /dev/null &&
+        pgrep -f "Runner.Listener" > /dev/null
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    network_mode: host
