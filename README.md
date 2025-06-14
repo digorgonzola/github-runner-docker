@@ -4,7 +4,7 @@ A Dockerized self-hosted GitHub Actions runner for automating CI/CD workflows in
 
 ## Features
 
-- Easily deploy a GitHub Actions runner in a Docker container
+- Deploy a GitHub Actions runner in a Docker container
 - Supports Linux-based workflows
 - Simple configuration via environment variables or `.env` file
 - Automatic runner removal on container exit to prevent orphaned runners
@@ -27,13 +27,22 @@ A Dockerized self-hosted GitHub Actions runner for automating CI/CD workflows in
 2. **Create a `.env` file** with the following variables:
 
    ```
-   ACCESS_TOKEN=your_github_token
    ORGANISATION=your_org_name
    RUNNER_GROUP=default
    LABELS=your,custom,labels
    ```
 
-3. **Modify the `docker-compose.yml` file** if necessary, especially deployment settings like the number of replicas or resource limits.
+3. **Create a file named `access_token.txt`** in the root directory and paste your GitHub personal access token into it. This token should have permissions to manage self-hosted runners in your organization.
+
+   ```
+   github_pat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   ```
+
+   This file will be mounted as a secret in the Docker container to be read by the `start.sh` script.
+
+   The secret is mounted via a tmpfs volume to ensure that it is not readable to the runner user (e.g. `github`).
+
+4. **Modify the `docker-compose.yml` file** if necessary, especially deployment settings like the number of replicas or resource limits.
 
    ```yaml
    deploy:
@@ -52,13 +61,13 @@ A Dockerized self-hosted GitHub Actions runner for automating CI/CD workflows in
         memory: 1G
    ```
 
-4. **Build and start the runner:**
+5. **Build and start the runner:**
 
    ```sh
    docker compose up -d
    ```
 
-5. **Stop and remove the runner(s):**
+6. **Stop and remove the runner(s):**
 
    ```sh
    docker compose down
