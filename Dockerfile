@@ -9,14 +9,16 @@ RUN apt-get update -y && apt-get upgrade -y && useradd -m ${RUNNER_USER}
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     curl jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip
 
-RUN mkdir -p ${RUNNER_HOME} && cd ${RUNNER_HOME} \
+RUN mkdir -p ${RUNNER_HOME} && chown -R ${RUNNER_USER}:${RUNNER_USER} ${RUNNER_HOME}
+
+USER ${RUNNER_USER}
+RUN cd ${RUNNER_HOME} \
     && curl -O -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
     && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
     && rm actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 
+USER root
 RUN bash ${RUNNER_HOME}/bin/installdependencies.sh && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN chown -R ${RUNNER_USER}:${RUNNER_USER} ${RUNNER_HOME}
 
 FROM deps as runner
 

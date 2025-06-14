@@ -4,8 +4,6 @@ services:
       context: .
       args:
         RUNNER_HOME: ${RUNNER_HOME:-/opt/actions-runner}
-    command:
-      - ./start.sh $ACCESS_TOKEN
     deploy:
       mode: replicated
       replicas: 2
@@ -19,12 +17,14 @@ services:
       restart_policy:
         condition: any
         delay: 1s
-    entrypoint: ["/bin/bash", "-c"]
+    entrypoint: ["./start.sh"]
     environment:
+      ACCESS_TOKEN_SECRET_FILE: /secrets/access_token
       LABELS: ${LABELS}
       ORGANISATION: ${ORGANISATION}
       RUNNER_GROUP: ${RUNNER_GROUP:-default}
       RUNNER_HOME: ${RUNNER_HOME:-/opt/actions-runner}
+      RUNNER_USER: ${RUNNER_USER:-github}
     healthcheck:
       test: |
         pgrep -f "run.sh" > /dev/null &&
@@ -35,3 +35,16 @@ services:
       retries: 3
       start_period: 60s
     network_mode: host
+    secrets:
+      - source: access_token
+        target: /secrets/access_token
+    user: root
+    volumes:
+      - type: tmpfs
+        target: /secrets
+        tmpfs:
+          mode: 0400
+
+secrets:
+  access_token:
+    file: ./access_token.txt
