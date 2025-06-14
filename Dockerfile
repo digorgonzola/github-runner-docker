@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 as deps
+FROM ubuntu:22.04 AS deps
 
 ARG RUNNER_VERSION="2.325.0"
 ARG RUNNER_HOME="/opt/actions-runner"
@@ -20,7 +20,7 @@ RUN cd ${RUNNER_HOME} \
 USER root
 RUN bash ${RUNNER_HOME}/bin/installdependencies.sh && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-FROM deps as runner
+FROM deps AS runner
 
 WORKDIR ${RUNNER_HOME}
 
