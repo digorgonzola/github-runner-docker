@@ -7,7 +7,20 @@ ARG RUNNER_USER="github"
 RUN apt-get update -y && apt-get upgrade -y && useradd -m ${RUNNER_USER}
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    curl jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip
+    ca-certificates curl jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip
+
+RUN install -m 0755 -d /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc \
+    && chmod a+r /etc/apt/keyrings/docker.asc
+
+RUN echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+    tee /etc/apt/sources.list.d/docker.list > /dev/null \
+    && apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+      docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
+    && usermod -a -G docker ${RUNNER_USER}
 
 RUN mkdir -p ${RUNNER_HOME} && chown -R ${RUNNER_USER}:${RUNNER_USER} ${RUNNER_HOME}
 
