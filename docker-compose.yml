@@ -4,9 +4,13 @@ services:
       context: .
       args:
         RUNNER_HOME: ${RUNNER_HOME:-/opt/actions-runner}
+      platforms:
+        - linux/amd64
+    depends_on:
+      - socat
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: ${REPLICAS:-2}
       resources:
         limits:
           cpus: '2'
@@ -20,6 +24,7 @@ services:
     entrypoint: ["./start.sh"]
     environment:
       ACCESS_TOKEN_SECRET_FILE: /secrets/access_token
+      DOCKER_HOST: localhost:2375
       LABELS: ${LABELS}
       ORGANISATION: ${ORGANISATION}
       RUNNER_GROUP: ${RUNNER_GROUP:-default}
@@ -44,6 +49,17 @@ services:
         target: /secrets
         tmpfs:
           mode: 0400
+
+  socat:
+    image: alpine/socat
+    command: tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
+    network_mode: host
+    user: root
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
 
 secrets:
   access_token:
