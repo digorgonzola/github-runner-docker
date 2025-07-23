@@ -14,10 +14,10 @@ services:
       resources:
         limits:
           cpus: '2'
-          memory: 4096M
+          memory: 6144M
         reservations:
-          cpus: '0.25'
-          memory: 256M
+          cpus: '0.5'
+          memory: 1024M
       restart_policy:
         condition: any
         delay: 1s
@@ -53,6 +53,9 @@ services:
   socat:
     image: alpine/socat
     command: tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
+    deploy:
+      restart_policy:
+        condition: any
     network_mode: host
     user: root
     volumes:
