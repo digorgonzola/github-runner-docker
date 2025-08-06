@@ -24,7 +24,7 @@ services:
     entrypoint: ["./start.sh"]
     environment:
       ACCESS_TOKEN_SECRET_FILE: /secrets/access_token
-      DOCKER_HOST: localhost:2375
+      DOCKER_HOST: socat:2375
       LABELS: ${LABELS}
       ORGANISATION: ${ORGANISATION}
       RUNNER_GROUP: ${RUNNER_GROUP:-default}
@@ -39,7 +39,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 60s
-    network_mode: host
     secrets:
       - source: access_token
         target: /secrets/access_token
@@ -56,7 +55,6 @@ services:
     deploy:
       restart_policy:
         condition: any
-    network_mode: host
     user: root
     volumes:
       - type: bind
