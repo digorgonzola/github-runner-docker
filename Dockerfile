@@ -1,13 +1,13 @@
 FROM ubuntu:22.04 AS deps
 
-ARG RUNNER_VERSION="2.325.0"
+ARG RUNNER_VERSION="2.327.1"
 ARG RUNNER_HOME="/opt/actions-runner"
 ARG RUNNER_USER="github"
 
 RUN apt-get update -y && apt-get upgrade -y && useradd -m ${RUNNER_USER}
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    ca-certificates curl jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip
+    ca-certificates curl jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip gettext-base
 
 RUN install -m 0755 -d /etc/apt/keyrings \
     && curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc \
@@ -39,6 +39,8 @@ WORKDIR ${RUNNER_HOME}
 
 # copy over scripts
 COPY . .
+
+RUN envsubst < cleanup.sh > cleanup.sh.tmp && mv cleanup.sh.tmp cleanup.sh
 
 RUN chmod +x cleanup.sh start.sh
 
