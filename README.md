@@ -125,6 +125,14 @@ The pre-commit configuration includes:
 - **.pre-commit-config.yaml**: Configuration for pre-commit hooks to maintain code quality and security.
 - **README.md**: Documentation and usage instructions for this project.
 
+## Maintenance
+
+Github Action Runner version gets out of date. Update the Dockerfile, update the version number, e.g. v2.328.0 to v2.330.0. Then rebuild/run;
+
+```
+docker compose up -d --build
+```
+
 ## License
 
 This project is licensed under the [MIT License](./LICENSE).
