@@ -10,7 +10,7 @@ get_remove_token() {
     curl -sX POST -H "Authorization: token ${ACCESS_TOKEN}" https://api.github.com/orgs/"${ORGANISATION}"/actions/runners/remove-token | jq .token --raw-output
 }
 
-CONTAINER_ID=$(awk -F/ '/docker/ {print substr($3,1,12); exit}' /proc/self/cgroup)
+CONTAINER_ID=$(grep -oP '(?<=docker/containers/)[a-f0-9]{12}' /proc/self/mountinfo | head -1)
 
 config_options=()
 config_options+=("--url" "https://github.com/${ORGANISATION}")
