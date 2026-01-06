@@ -1,0 +1,52 @@
+name: Docker Compose Validation
+
+env:
+  branch: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'cleanup.sh'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.dockerignore'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Access Token
+        run: |
+          printf "%s\n" ${{ secrets.RUNNER_ACCESS_TOKEN }} > access_token.txt
+
+      - name: Setup .env file
+        run: |
+          cat <<EOF > .env
+          LABELS=ci,test
+          ORGANISATION=${{ github.repository_owner }}
+          REPLICAS=1
+          RUNNER_GROUP=test
+          EOF
+
+      - name: Start containers
+        run: docker compose up -d --build
+
+      - name: Wait for healthy
+        run: |
+          timeout 60 bash -c 'until docker compose ps | grep -q "(healthy)"; do sleep 2; done'
+
+      - name: Check running containers
+        run: docker compose ps
+
+      - name: View logs (for debugging)
+        if: always()
+        run: docker compose logs
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
