@@ -12,6 +12,7 @@ on:
       - 'Dockerfile'
       - 'docker-compose.yml'
       - '.dockerignore'
+      - '.github/workflows/test.yml'
 
 jobs:
   build:
