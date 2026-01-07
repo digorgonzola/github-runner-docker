@@ -5,9 +5,12 @@
   ],
   "automerge": true,
   "automergeType": "branch",
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": ["(^|/)Dockerfile$"],
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)Dockerfile$/"
+      ],
       "matchStrings": [
         "ARG RUNNER_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
