@@ -1,30 +1,16 @@
 name: Docker Compose Validation
 
-env:
-  branch: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-
 on:
   pull_request:
     branches:
       - main
-    paths:
-      - '.github/workflows/test.yml'
-      - 'Dockerfile'
-      - 'docker-compose.yml'
-      - '.dockerignore'
-      - 'scripts/**'
   push:
     branches:
       - renovate/**
-    paths:
-      - '.github/workflows/test.yml'
-      - 'Dockerfile'
-      - 'docker-compose.yml'
-      - '.dockerignore'
-      - 'scripts/**'
 
 jobs:
   docker-compose-validation:
+    name: Validate Docker Compose
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
