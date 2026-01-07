@@ -12,6 +12,7 @@ jobs:
   docker-compose-validation:
     name: Validate Docker Compose
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'renovate/') || github.event_name == 'push' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
