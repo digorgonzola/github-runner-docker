@@ -54,10 +54,10 @@ FROM deps AS runner
 WORKDIR ${RUNNER_HOME}
 
 # copy over scripts
-COPY . .
+COPY scripts/ .
 
 RUN envsubst < cleanup.sh > cleanup.sh.tmp && mv cleanup.sh.tmp cleanup.sh
 
-RUN chmod +x cleanup.sh start.sh
+RUN chmod +x cleanup.sh
 
 USER ${RUNNER_USER}
