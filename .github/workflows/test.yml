@@ -15,7 +15,6 @@ on:
       - 'scripts/**'
   push:
     branches:
-      - main
       - renovate/**
     paths:
       - '.github/workflows/test.yml'
