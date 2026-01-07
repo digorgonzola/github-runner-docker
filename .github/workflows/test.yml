@@ -15,7 +15,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'renovate/') || github.event_name == 'push' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Access Token
         run: |
