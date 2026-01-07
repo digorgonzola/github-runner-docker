@@ -1,8 +1,5 @@
 name: Docker Compose Validation
 
-env:
-  branch: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-
 on:
   pull_request:
     branches:
@@ -13,6 +10,7 @@ on:
 
 jobs:
   docker-compose-validation:
+    name: Validate Docker Compose
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
