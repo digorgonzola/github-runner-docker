@@ -8,14 +8,24 @@ on:
     branches:
       - main
     paths:
-      - 'cleanup.sh'
+      - '.github/workflows/test.yml'
       - 'Dockerfile'
       - 'docker-compose.yml'
       - '.dockerignore'
+      - 'scripts/**'
+  push:
+    branches:
+      - main
+      - renovate/**
+    paths:
       - '.github/workflows/test.yml'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.dockerignore'
+      - 'scripts/**'
 
 jobs:
-  build:
+  docker-compose-validation:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
