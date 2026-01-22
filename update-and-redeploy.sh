@@ -6,7 +6,7 @@ BRANCH="main"
 
 cd "$REPO_DIR"
 
-git fetch origin "$BRANCH"
+git fetch origin
 
 LOCAL_HASH=$(git rev-parse "$BRANCH")
 REMOTE_HASH=$(git rev-parse "origin/$BRANCH")
@@ -18,7 +18,21 @@ fi
 
 echo "[$(date)] New commits detected: $LOCAL_HASH -> $REMOTE_HASH"
 
+# Stash any local uncommitted changes
+STASHED=false
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "[$(date)] Stashing local changes..."
+  git stash push -m "auto-stash before update-and-redeploy"
+  STASHED=true
+fi
+
 git pull --rebase origin "$BRANCH"
+
+# Reapply stashed changes if we stashed anything
+if [ "$STASHED" = true ]; then
+  echo "[$(date)] Reapplying stashed changes..."
+  git stash pop
+fi
 
 docker compose build
 docker compose down
