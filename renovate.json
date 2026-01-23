@@ -3,10 +3,11 @@
   "extends": [
     "config:recommended"
   ],
-  "automerge": true,
   "automergeType": "branch",
+  "platformAutomerge": false,
   "customManagers": [
     {
+      "automerge": true,
       "customType": "regex",
       "managerFilePatterns": [
         "/(^|/)Dockerfile$/"
@@ -17,6 +18,12 @@
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "actions/runner",
       "versioningTemplate": "semver"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
     }
   ]
 }
