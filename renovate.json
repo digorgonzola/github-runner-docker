@@ -7,7 +7,6 @@
   "platformAutomerge": false,
   "customManagers": [
     {
-      "automerge": true,
       "customType": "regex",
       "managerFilePatterns": [
         "(^|/)Dockerfile$"
