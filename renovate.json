@@ -10,7 +10,7 @@
       "automerge": true,
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|/)Dockerfile$/"
+        "(^|/)Dockerfile$"
       ],
       "matchStrings": [
         "ARG RUNNER_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
