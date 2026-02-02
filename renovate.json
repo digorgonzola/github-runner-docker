@@ -24,5 +24,8 @@
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     }
-  ]
+  ],
+  "pre-commit": {
+    "enabled": true
+  }
 }
