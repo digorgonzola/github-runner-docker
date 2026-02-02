@@ -4,9 +4,19 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - .dockerignore
+      - docker-compose.yml
+      - Dockerfile
+      - scripts/**
   push:
     branches:
       - renovate/**
+    paths:
+      - .dockerignore
+      - docker-compose.yml
+      - Dockerfile
+      - scripts/**
 
 jobs:
   docker-compose-validation:
