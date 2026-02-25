@@ -22,7 +22,7 @@ echo "[$(date)] New commits detected: $LOCAL_HASH -> $REMOTE_HASH"
 STASHED=false
 if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "[$(date)] Stashing local changes..."
-  git stash push -m "auto-stash before update-and-redeploy"
+  git stash save "auto-stash before update-and-redeploy"
   STASHED=true
 fi
 
@@ -31,10 +31,11 @@ git pull --rebase origin "$BRANCH"
 # Reapply stashed changes if we stashed anything
 if [ "$STASHED" = true ]; then
   echo "[$(date)] Reapplying stashed changes..."
-  git stash pop
+  git stash apply
 fi
 
 docker compose build
+docker buildx bake -f docker-compose.yml --pull
 docker compose down
 docker compose up -d
 
