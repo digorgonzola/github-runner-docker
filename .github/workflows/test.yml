@@ -48,7 +48,7 @@ jobs:
           EOF
 
       - name: Bake Docker images
-        uses: docker/bake-action@v6
+        uses: docker/bake-action@v7
         with:
           builder: ${{ steps.buildx.outputs.name }}
           files: docker-compose.yml
