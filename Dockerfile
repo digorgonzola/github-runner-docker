@@ -1,6 +1,6 @@
 FROM ubuntu:26.04 AS deps
 
-ARG RUNNER_VERSION="2.336.0"
+ARG RUNNER_VERSION="2.337.0"
 ARG RUNNER_HOME="/opt/actions-runner"
 ARG RUNNER_USER="github"
 
