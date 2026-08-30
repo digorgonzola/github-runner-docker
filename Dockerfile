@@ -1,4 +1,4 @@
-FROM ubuntu:26.04 AS deps
+FROM ubuntu:24.04 AS deps
 
 ARG RUNNER_VERSION="2.337.0"
 ARG RUNNER_HOME="/opt/actions-runner"
