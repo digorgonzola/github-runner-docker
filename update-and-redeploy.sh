@@ -46,6 +46,6 @@ fi
 # Runs even without new commits so the heartbeat also reports services that
 # died between updates. --wait exits non-zero if a service is not running or
 # healthy within the timeout, which sends /fail.
-docker compose up -d --wait --wait-timeout 300
+docker compose up -d --remove-orphans --wait --wait-timeout 300
 
 echo "[$(date)] Services running and healthy."

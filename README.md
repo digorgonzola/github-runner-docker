@@ -170,7 +170,8 @@ To set it up:
    HEARTBEAT_URL=https://incidents.betterstack.com/api/v1/heartbeat/<token>
    ```
 
-3. Test with `sudo systemctl start github-runner-docker-update.service`, then check the logs with `journalctl -u github-runner-docker-update.service -n 50`.
+3. If the units were installed with an earlier version that used `ExecStopPost`, run `sudo ./setup-systemd-timer.sh` again to remove it.
+4. Test with `sudo systemctl start github-runner-docker-update.service`, then check the logs with `journalctl -u github-runner-docker-update.service -n 50`.
 
 The heartbeat only checks the services when the timer runs. A runner that fails between runs is reported on the next run.
 
