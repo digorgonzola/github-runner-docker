@@ -143,6 +143,8 @@ docker compose up -d --build
 1. Pulls new commits from `main` and, if there are any, rebuilds the images.
 2. Runs `docker compose up -d --wait` on every run, including runs with no new commits. The run fails if a service is not running and healthy within 5 minutes.
 
+Because step 2 runs every time, the timer also starts services that were stopped, and applies `.env` changes such as `REPLICAS`. Stop the timer (`sudo systemctl stop github-runner-docker-update.timer`) before maintenance that needs the services to stay down.
+
 Install or update the units (run again after changes to the setup script):
 
 ```sh
@@ -168,7 +170,7 @@ To set it up:
    HEARTBEAT_URL=https://incidents.betterstack.com/api/v1/heartbeat/<token>
    ```
 
-3. Run `sudo ./setup-systemd-timer.sh` again. This adds `EnvironmentFile` and `ExecStopPost` to the service unit.
+3. Run `sudo ./setup-systemd-timer.sh` again. This adds `ExecStopPost` to the service unit.
 4. Test with `sudo systemctl start github-runner-docker-update.service`, then check the logs with `journalctl -u github-runner-docker-update.service -n 50`.
 
 The heartbeat only checks the services when the timer runs. A runner that fails between runs is reported on the next run.

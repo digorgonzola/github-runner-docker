@@ -65,7 +65,6 @@ Wants=network-online.target
 Type=oneshot
 User=$RUN_AS_USER
 WorkingDirectory=$REPO_DIR
-EnvironmentFile=-$REPO_DIR/.env
 ExecStart=$UPDATE_SCRIPT_ABS
 ExecStopPost=$HEARTBEAT_SCRIPT_ABS
 EOF
