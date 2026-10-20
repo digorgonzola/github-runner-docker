@@ -6,6 +6,10 @@ BRANCH="main"
 
 cd "$REPO_DIR"
 
+# Report every run, including failed ones, to the Betterstack heartbeat.
+# Runs from the repo dir; the script's exit code is kept.
+trap './send-heartbeat.sh $? || echo "Heartbeat failed." >&2' EXIT
+
 git fetch origin
 
 LOCAL_HASH=$(git rev-parse "$BRANCH")
@@ -34,12 +38,14 @@ else
 
   docker compose build
   docker buildx bake -f docker-compose.yml --pull
-  docker compose down
 fi
 
+# No `docker compose down`: `up` already recreates containers whose image or
+# config changed, and removing the network can fail while Docker is still
+# releasing the old endpoints ("network ... has active endpoints").
 # Runs even without new commits so the heartbeat also reports services that
 # died between updates. --wait exits non-zero if a service is not running or
-# healthy within the timeout, which fails the unit and sends /fail.
-docker compose up -d --wait --wait-timeout 300
+# healthy within the timeout, which sends /fail.
+docker compose up -d --remove-orphans --wait --wait-timeout 300
 
 echo "[$(date)] Services running and healthy."

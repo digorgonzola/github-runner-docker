@@ -6,9 +6,6 @@ set -euo pipefail
 # Relative path (inside the repo) to the update script
 UPDATE_SCRIPT_REL="update-and-redeploy.sh"
 
-# Relative path (inside the repo) to the heartbeat script run after each update
-HEARTBEAT_SCRIPT_REL="send-heartbeat.sh"
-
 # Systemd unit base name (without .service/.timer)
 UNIT_NAME="github-runner-docker-update"
 
@@ -36,23 +33,20 @@ fi
 SERVICE_PATH="/etc/systemd/system/${UNIT_NAME}.service"
 TIMER_PATH="/etc/systemd/system/${UNIT_NAME}.timer"
 UPDATE_SCRIPT_ABS="$REPO_DIR/$UPDATE_SCRIPT_REL"
-HEARTBEAT_SCRIPT_ABS="$REPO_DIR/$HEARTBEAT_SCRIPT_REL"
 
-for script in "$UPDATE_SCRIPT_ABS" "$HEARTBEAT_SCRIPT_ABS"; do
-  if [[ ! -f "$script" ]]; then
-    echo "Error: script not found at $script"
-    echo "Configure UPDATE_SCRIPT_REL / HEARTBEAT_SCRIPT_REL correctly in this script."
-    exit 1
-  fi
-  if [[ ! -x "$script" ]]; then
-    echo "Making script executable: $script"
-    chmod +x "$script"
-  fi
-done
+if [[ ! -f "$UPDATE_SCRIPT_ABS" ]]; then
+  echo "Error: update script not found at $UPDATE_SCRIPT_ABS"
+  echo "Configure UPDATE_SCRIPT_REL correctly in this script."
+  exit 1
+fi
+
+if [[ ! -x "$UPDATE_SCRIPT_ABS" ]]; then
+  echo "Making update script executable: $UPDATE_SCRIPT_ABS"
+  chmod +x "$UPDATE_SCRIPT_ABS"
+fi
 
 echo "Repo directory detected as: $REPO_DIR"
 echo "Using update script:        $UPDATE_SCRIPT_ABS"
-echo "Using heartbeat script:     $HEARTBEAT_SCRIPT_ABS"
 echo
 
 cat > "$SERVICE_PATH" <<EOF
@@ -66,7 +60,6 @@ Type=oneshot
 User=$RUN_AS_USER
 WorkingDirectory=$REPO_DIR
 ExecStart=$UPDATE_SCRIPT_ABS
-ExecStopPost=$HEARTBEAT_SCRIPT_ABS
 EOF
 
 cat > "$TIMER_PATH" <<EOF
