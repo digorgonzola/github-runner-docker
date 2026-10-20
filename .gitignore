@@ -1,6 +1,9 @@
 # Ignore .env files
 .env
 
+# GitHub token read by docker compose as the access_token secret
+access_token.txt
+
 # ignore IDE files
 .idea
 
