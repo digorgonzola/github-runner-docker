@@ -119,6 +119,9 @@ The pre-commit configuration includes:
 - **docker-compose.yml**: Defines the Docker service for the runner, including environment variables, health checks, and resource limits.
 - **start.sh**: Entrypoint script that registers the runner with GitHub, configures it, and handles cleanup on shutdown.
 - **cleanup.sh**: Script to clean the runner's `_work` directory after each job to ensure a fresh environment.
+- **setup-systemd-timer.sh**: Installs the systemd service and timer that run the automatic update on the host.
+- **update-and-redeploy.sh**: Pulls new commits, rebuilds and restarts the services, and checks that they are healthy.
+- **send-heartbeat.sh**: Sends the Betterstack heartbeat after each update run.
 - **.env.example**: Template file showing the required environment variables for configuration.
 - **.dockerignore**: Specifies which files to exclude from the Docker build context (only includes necessary scripts).
 - **.gitignore**: Ensures sensitive files like `.env` and `access_token.txt` are not committed to version control.
@@ -132,6 +135,43 @@ Github Action Runner version gets out of date. Update the Dockerfile, update the
 ```
 docker compose up -d --build
 ```
+
+### Automatic updates (systemd timer)
+
+`setup-systemd-timer.sh` installs a systemd service and timer on the host. Each run executes `update-and-redeploy.sh`, which:
+
+1. Pulls new commits from `main` and, if there are any, rebuilds the images.
+2. Runs `docker compose up -d --wait` on every run, including runs with no new commits. The run fails if a service is not running and healthy within 5 minutes.
+
+Install or update the units (run again after changes to the setup script):
+
+```sh
+sudo ./setup-systemd-timer.sh
+```
+
+Edit `ON_CALENDAR` in the script to change how often the timer runs (default: `daily`).
+
+### Monitoring with Betterstack
+
+The service can send a [Betterstack heartbeat](https://betterstack.com/docs/uptime/cron-and-heartbeat-monitor/) after each run:
+
+- On success, it pings `HEARTBEAT_URL`.
+- On failure (for example, a failed `git pull`, a failed build, or an unhealthy service), it pings `HEARTBEAT_URL/fail`, so Betterstack alerts at once.
+- If the timer stops, no ping arrives and Betterstack alerts when the heartbeat period expires.
+
+To set it up:
+
+1. In Betterstack, create a heartbeat monitor. Set the period to match `ON_CALENDAR` (for example, 1 day) and add a grace period that covers a full rebuild (for example, 30 minutes).
+2. Copy the heartbeat URL from the monitor's page in Betterstack and add it to `.env`:
+
+   ```
+   HEARTBEAT_URL=https://incidents.betterstack.com/api/v1/heartbeat/<token>
+   ```
+
+3. Run `sudo ./setup-systemd-timer.sh` again. This adds `EnvironmentFile` and `ExecStopPost` to the service unit.
+4. Test with `sudo systemctl start github-runner-docker-update.service`, then check the logs with `journalctl -u github-runner-docker-update.service -n 50`.
+
+The heartbeat only checks the services when the timer runs. A runner that fails between runs is reported on the next run.
 
 ## License
 
